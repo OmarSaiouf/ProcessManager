@@ -1,0 +1,28 @@
+{
+    "name": "omarsaiouf/screen-marager",
+    "description": "for screen manager",
+    "type": "library",
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^13.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "OmarSaiouf\\ProcessManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "omarsaiouf",
+            "email": "omersaiouf@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "OmarSaiouf\\ProcessManager\\ProcessManagerServiceProvider"
+            ]
+        }
+    }
+}
