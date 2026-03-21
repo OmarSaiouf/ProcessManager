@@ -4,11 +4,15 @@ namespace OmarSaiouf\ProcessManager\Drivers;
 
 use OmarSaiouf\ProcessManager\Contracts\ProcessManagerInterface;
 use OmarSaiouf\ProcessManager\DTOs\ScreenSession;
-use Illuminate\Support\Facades\Process;
 use RuntimeException;
 
-class ScreenDriver implements ProcessManagerInterface
+class ScreenDriver extends AbstractShellDriver implements ProcessManagerInterface
 {
+    protected function requiredBinary(): string
+    {
+        return 'screen';
+    }
+
     public function create(string $sessionName, string $command, ?string $workingDir = null): bool
     {
         $this->ensureNotExists($sessionName);
@@ -105,44 +109,6 @@ class ScreenDriver implements ProcessManagerInterface
         return 'screen -r ' . escapeshellarg($sessionKey);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers
-    |--------------------------------------------------------------------------
-    */
-
-    private function run(string $command, ?string $path = null): bool
-    {
-        $this->ensureScreenIsInstalled();
-
-        $process = Process::path($path ?? base_path())->run($command);
-
-        if (!$process->successful()) {
-            throw new RuntimeException($this->resolveErrorMessage($process->errorOutput(), $process->output()));
-        }
-
-        return true;
-    }
-
-    private function runAndGet(string $command, bool $allowEmptyResult = false): string
-    {
-        $this->ensureScreenIsInstalled();
-
-        $process = Process::run($command);
-
-        if (!$process->successful()) {
-            $combinedOutput = trim($process->output() . "\n" . $process->errorOutput());
-
-            if ($allowEmptyResult && $this->isNoSocketsOutput($combinedOutput)) {
-                return '';
-            }
-
-            throw new RuntimeException($this->resolveErrorMessage($process->errorOutput(), $process->output()));
-        }
-
-        return $process->output();
-    }
-
     private function ensureExists(string $name): void
     {
         if ($this->findSession($name) === null) {
@@ -213,38 +179,8 @@ class ScreenDriver implements ProcessManagerInterface
         return $sessions;
     }
 
-    private function ensureScreenIsInstalled(): void
-    {
-        static $checked = false;
-
-        if ($checked) {
-            return;
-        }
-
-        $process = Process::run('command -v screen');
-
-        if (!$process->successful()) {
-            throw new RuntimeException('The "screen" binary is not installed or not available in PATH.');
-        }
-
-        $checked = true;
-    }
-
-    private function isNoSocketsOutput(string $output): bool
+    protected function isEmptyResultOutput(string $output): bool
     {
         return str_contains($output, 'No Sockets found');
-    }
-
-    private function resolveErrorMessage(string $errorOutput, string $output = ''): string
-    {
-        $message = trim($errorOutput);
-
-        if ($message !== '') {
-            return $message;
-        }
-
-        $message = trim($output);
-
-        return $message !== '' ? $message : 'The process failed without returning an error message.';
     }
 }

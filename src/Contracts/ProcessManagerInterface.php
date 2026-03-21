@@ -5,7 +5,7 @@ namespace OmarSaiouf\ProcessManager\Contracts;
 interface ProcessManagerInterface
 {
     /**
-     * Create a new detached screen session and run the given command inside it.
+     * Create a new managed process session and run the given command inside it.
      *
      * Example:
      * $manager->create('queue-worker', 'php artisan queue:work', base_path());
@@ -13,7 +13,7 @@ interface ProcessManagerInterface
     public function create(string $sessionName, string $command, ?string $workingDir = null): bool;
 
     /**
-     * Return all active screen sessions.
+     * Return all managed process sessions for the active driver.
      *
      * Example:
      * $sessions = $manager->all();
@@ -21,7 +21,7 @@ interface ProcessManagerInterface
     public function all(): array;
 
     /**
-     * Check whether a screen session exists by id, name, or full session key.
+     * Check whether a managed session exists by id, name, or driver-specific key.
      *
      * Example:
      * $manager->exists('12345');
@@ -30,7 +30,7 @@ interface ProcessManagerInterface
     public function exists(string $sessionName): bool;
 
     /**
-     * Send a command to an existing screen session.
+     * Send a command to an existing managed session when the driver supports interactive input.
      *
      * Example:
      * $manager->sendCommand('queue-worker', 'php artisan cache:clear');
@@ -38,7 +38,7 @@ interface ProcessManagerInterface
     public function sendCommand(string $sessionName, string $command): bool;
 
     /**
-     * Stop an existing screen session.
+     * Stop an existing managed session.
      *
      * Example:
      * $manager->stop('queue-worker');
@@ -46,7 +46,7 @@ interface ProcessManagerInterface
     public function stop(string $sessionName): bool;
 
     /**
-     * Restart a screen session by stopping it and creating it again.
+     * Restart a managed session by stopping it and creating it again.
      *
      * Example:
      * $manager->restart('queue-worker', 'php artisan queue:work', base_path());
@@ -54,7 +54,7 @@ interface ProcessManagerInterface
     public function restart(string $sessionName, string $command, ?string $workingDir = null): bool;
 
     /**
-     * Capture the visible output of a screen session, with optional scrollback.
+     * Capture the current output or logs of a managed session.
      *
      * Example:
      * $output = $manager->captureOutput('queue-worker');
@@ -62,7 +62,7 @@ interface ProcessManagerInterface
     public function captureOutput(string $sessionName, bool $includeScrollback = true): string;
 
     /**
-     * Return the terminal command needed to attach to a screen session.
+     * Return the terminal command needed to attach to a managed session when supported.
      *
      * Example:
      * $command = $manager->attachCommand('queue-worker');
