@@ -1,6 +1,6 @@
 {
-    "name": "omarsaiouf/screen-marager",
-    "description": "for screen manager",
+    "name": "omarsaiouf/processmanager",
+    "description": "A simple Process Manager for Laravel",
     "type": "library",
     "require": {
         "php": "^8.3",
